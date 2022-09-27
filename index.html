@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shecid- Dinosaurio</title>
+
+    <style>
+        body{
+            height: 100vh;
+            background-color: #E8A99B;
+            display: flex;
+            align-items: center;
+        }
+        .contenedor{
+            width: 920px;
+            height: 280px;
+            margin: 0 auto;
+            
+            position: relative;
+            background: linear-gradient(#b7d6c7, transparent) #ffe2d1;
+            transition: background-color 1s linear;
+        }
+        
+        .dino {
+            width: 84px;
+            height: 84px;
+
+            position: absolute;
+            bottom: 22px;
+            left: 42px;
+            z-index: 2;
+
+            background: url(dino.png) repeat-x 0px 0px;
+            background-size: 336px 84px;
+            background-position-x: 0px;
+        }
+
+        .dino-corriendo {
+            animation: animarDino 0.25s steps(2) infinite;
+        }
+        .dino-estrellado {
+            background-position-x: -252px ;
+        }
+        @keyframes animarDino{
+            from{
+                background-position-x: -84px;
+            }
+            to{
+                background-position-x: -252px ;
+            }
+        }
+
+            
+        
+
+        .suelo {
+            width: 200%;
+            height: 42px;
+
+            position: absolute;
+            bottom:0;
+            left: 0;
+
+            background: url(suelo.png) repeat-x 0px 0px;
+            background-size: 50% 42px;
+        }
+        
+        
+    </style>
+
+
+    <div class="contenedor">
+        <div class="suelo"></div>
+        <div class="dino dino-corriendo"></div>
+    </div>
+    <script>
+
+        var time =new Date();
+        var delatime= 0;
+
+        var contenedor;
+        var dino;
+        var suelo;
+        
+        var suelox=0;
+        var velEscenario= 1280/8;
+        var gameVel=2;
+
+        var sueloy=22;
+        var vely=0;
+        var impulso=250;
+        var gravedad=190;
+
+        var dinoPosy=sueloy; 
+
+        var parado=false;
+        var saltando=false;
+
+        if(document.readyState === "complete"){
+     
+        }else{
+            Init ();
+        }
+        
+        function Init(){
+            suelo=document.querySelector(".suelo");
+            contenedor=document.querySelector(".contenedor");
+            dino=document.querySelector(".dino");
+            document.addEventListener("keydown", HandleKeyDown);
+            loop();
+        }
+        function loop(){
+            delatime =(new Date()-time)/1000;
+            time= new Date();
+            //console.log(time);
+            update();
+            requestAnimationFrame(loop);
+        }
+        function HandleKeyDown(ev){
+            if(ev.keyCode ==32 ){
+                //console.log("tecla");
+                saltar();
+                
+            }
+        }
+        function saltar(){
+            if(dinoPosy === sueloy){
+                //console.log("SALTAR")
+                saltando = true;
+                vely= impulso;
+                dino.classList.remove("dino-corriendo");
+            }
+
+        }
+        function update(){
+            moversuelo();
+            moverDinosaurio();
+            vely-=gravedad*delatime
+
+        }
+        function moversuelo(){
+            //console.log("mover suelo")
+            suelox += delatime*gameVel*velEscenario;
+            suelo.style.left = -(suelox % contenedor.clientWidth) + "px";
+        }
+        function moverDinosaurio(){
+            dinoPosy+=vely*delatime;
+            //console.log("mover dinosaurio")
+            if(dinoPosy < sueloy){
+                TocarSuelo();
+            }
+            dino.style.bottom=dinoPosy+"px";
+        }
+        function TocarSuelo(){
+            //console.log("tocar suelo")
+            dinoPosy = sueloy;
+            vely=0;
+            if(saltando===true){
+                dino.classList.add("dino-corriendo");
+                //console.log("if de tocar suelo")
+            }
+            saltando=false;
+        }
+    </script>
+
+</body>
+</html>
